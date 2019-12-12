@@ -1,6 +1,6 @@
 import json
 import operator
-from os import mkdir, getcwd, path, makedirs
+from os import getcwd, path, makedirs
 from time import time
 from urllib.request import urlopen
 import tensorflow as tf
@@ -29,7 +29,6 @@ class Sorting(View):
 
 @api_view(['GET'])
 def detection_sorting_alert(request, profile_id):
-    # TODO: Something in here is causing a memory leak. Might need to explicitly kill Tensorflow.
     # Get network & settings object from the database
     profile = ProfileCatalog.objects.get(id=profile_id)
     network = profile.network
@@ -92,9 +91,7 @@ def detection_sorting_alert(request, profile_id):
     top_score_label = max(top_score_dict.items(), key=operator.itemgetter(1))[0]
 
     # Get bin position based on label (if score is above percentage threshold)
-    # TODO: Reenable tolerance checks
-    # if header_scores[top_score_label] >= settings.tolerance:
-    if True:
+    if header_scores[top_score_label] >= settings.tolerance:
         # Check each bin number for the part number label
         if profile.bin_1.all().filter(part_number=top_score_label).exists():
             position = 1
@@ -110,11 +107,10 @@ def detection_sorting_alert(request, profile_id):
             position = 6
         else:
             position = 0
-    # TODO: Implement confidence threshold
-    # else:
-    #     # Set bin to 0 position if threshold is not met
-    #     position = 0
-    print("Position: {}".format(position))
+        print("Position: {}".format(position))
+    else:
+        # Set bin to 0 position if threshold is not met
+        position = 0
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)('broadcast', {'type': 'sorting_event', 'label': top_score_label,
                                                           'position': position})

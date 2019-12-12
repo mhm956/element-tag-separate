@@ -58,7 +58,6 @@ def update_block_count(blocks):
     If the number of photos is over the the required threshold,
     :param blocks: Query set of blocks to have their photo count updated
     """
-    # TODO: image count should be minimum 200?
     for block in blocks:
         block_artifact_directory = path.join(getcwd(), "artifacts/dataset/", str(block.part_number))
         if path.exists(block_artifact_directory):

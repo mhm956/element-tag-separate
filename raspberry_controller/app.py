@@ -15,7 +15,7 @@ from flask_cors import CORS
 
 # Create/set the stop event.
 app = Flask(__name__)
-CORS(app)  # TODO: Look into making this only work from host origin
+CORS(app)
 
 start_event = False
 sorting = False
@@ -71,11 +71,13 @@ def arduino(url):
                 arduino_serial.write(bytes('a', 'UTF-8'))
 
 
+# Default route
 @app.route('/')
 def index():
     return "Connection Active: Ready to receive commands!"
 
 
+# Starts the training loop
 @app.route('/detection_training')
 def detection_training():
     """ Start the training detection loop """
@@ -86,6 +88,7 @@ def detection_training():
     return json.dumps({'success': True}), 200
 
 
+# Starts the sorting loop
 @app.route('/detection_sorting')
 def detection_sorting():
     """ Start the sorting detection loop """
@@ -96,6 +99,7 @@ def detection_sorting():
     return "Detection loop started for sorting. Beginning detection loop", 200
 
 
+# Stop the training and sorting loops
 @app.route('/stop_detection')
 def stop_detection():
     """ Stop the detection loop """
@@ -104,6 +108,7 @@ def stop_detection():
     return "Detection loop stopping. Wait for loop to finish.", 200
 
 
+# Handle 500 errors
 @app.errorhandler(500)
 def internal_error(error):
     return jsonify(
@@ -111,6 +116,7 @@ def internal_error(error):
     ), 500
 
 
+# Handle 404 errors
 @app.errorhandler(404)
 def not_found_error(error):
     return jsonify(
@@ -118,6 +124,7 @@ def not_found_error(error):
     )
 
 
+# Logging function used in application
 if not app.debug:
     file_handler = FileHandler('error.log')
     file_handler.setFormatter(
@@ -129,9 +136,8 @@ if not app.debug:
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    # TODO: Re-enable this after debugging
-    # origin = input("Please enter the expected host IP address: ")
-    origin = "192.168.0.12:8000"
+    # Example 192.168.0.12:8000
+    origin = input("Please enter the expected host IP address: ")
     app.logger.info("Target Host set: %s", origin)
     thread = Thread(target=arduino, args=(origin,))
     thread.daemon = True

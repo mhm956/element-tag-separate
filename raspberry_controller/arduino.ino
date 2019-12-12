@@ -1,3 +1,8 @@
+/*****************************************************************
+* Please note that the servo values are estimates, after moving  *
+* the system it may be necessary to realign the servo angles     *
+*****************************************************************/
+
 #include <Servo.h>
 #include <Adafruit_NeoPixel.h>
 
@@ -23,7 +28,7 @@ Servo feeder_servo;
 Servo hopper_servo;
 
 /*****************************************************************
- *                  Absolute Servo Variables                   *
+ *                  Absolute Servo Variables                    *
 *****************************************************************/
 Servo sorter_servo;
 int rec_byte = 0;
