@@ -81,6 +81,7 @@ def detection_sorting_alert(request, profile_id):
                 header_scores[header] = score
             print(header_scores.__str__())
         tensor_graph.close()
+        # sess.close()  # This may be the solution to the leak.
 
         # Get label based on top score and append it to a new dictionary
         top_score_label = max(header_scores.items(), key=operator.itemgetter(1))[0]
